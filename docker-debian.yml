@@ -1,0 +1,50 @@
+---
+#python >= 2.6 docker-py >= 0.3.0 The docker server >= 0.10.0
+- hosts: nameofhost  
+  remote_user: root
+  tasks:
+  - name: Verify and remove previous docker install
+    apt: 
+      name: ['docker','lxc-docker','docker-engine','docker.io','docker-ce']
+      state: absent
+  - name: Update APT package manager repositories cache
+    apt:
+      update_cache: yes
+  - name: Upgrade after removal
+    apt:
+      upgrade: dist
+  - name: Prepare docker install
+    apt: 
+      name: ['curl','apt-transport-https','ca-certificates','gnupg2','software-properties-common']
+  - name: Import GPG key for docker Repositories
+    shell: "curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add" 
+  - name: Enable docker repository
+    shell: 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"'
+  - name: Update APT package manager repositories cache
+    apt:
+      update_cache: yes
+  - name: Upgrade after adding repository
+    apt:
+      upgrade: dist
+  - name: Install Docker CE
+    apt:
+      name: docker-ce
+  - name: Verify service status for docker
+    command: systemctl status docker
+  - name: Install Python-pip in order to launch container
+    apt:
+      name: python-pip
+  - name: Install pip module of docker
+    pip:
+      name: docker
+  - name: include variables for creation of docker container
+    include_vars: vars.yml
+  - name: Create Container
+    docker_container:
+      name: "{{ name }}"
+      image: "{{ image }}"
+      ports:
+        - "{{ src_port }}:{{ dest_port }}"
+      #volumes:
+      # - "{{ src_vol }}:{{ dest_vol }}"
+      #privileged: "{{ privileged }}"

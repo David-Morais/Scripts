@@ -1,0 +1,25 @@
+---
+#À partir debian, il faut installer des modules
+
+- hosts: windows  
+  remote_user: root
+  tasks:
+  - name: ensure Docker Desktop is installed via Chocolatey
+    win_chocolatey:
+      name: docker-desktop 
+      state: present
+  - name: ensure Docker is up and running
+    docker_container:
+      image: hello-world
+      state: running
+  - name: include variables for creation of docker container
+    include_vars: vars.yml
+  - name: Create Container
+    docker_container:
+      name: "{{ name }}"
+      image: "{{ image }}"
+      ports:
+        - "{{ src_port }}:{{ dest_port }}"
+      #volumes:
+      # - "{{ src_vol }}:{{ dest_vol }}"
+      privileged: "{{ privileged }}"

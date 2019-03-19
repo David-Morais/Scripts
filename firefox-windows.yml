@@ -1,0 +1,25 @@
+---
+#- name: Start firefox with google-homepage
+#    win_command: '"C:\Program Files\Mozilla Firefox\firefox.exe" https://www.google.com/'
+
+- hosts: windows  
+  remote_user: root
+  tasks:
+  - name: install Chocolatey
+    win_chocolatey:
+      name: chocolatey
+  - name: ensure firefox is uninstalled via Chocolatey
+    win_chocolatey:
+      name: firefox
+      state: absent     
+  - name: now, we reinstall firefox via Chocolatey
+    win_chocolatey:
+      name: firefox
+      state: present
+  - name: check version
+    win_command: firefox -v
+    register: version
+    args:
+      chdir: C:/Program Files/Mozilla Firefox/
+  - debug:
+      msg: "{{ version.stdout }}"

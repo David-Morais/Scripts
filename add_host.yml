@@ -1,0 +1,15 @@
+- name: add_host
+  hosts: localhost # target local host
+  connection: local # run actions locally
+  gather_facts: False
+  tasks:    
+    - name: Add the instance to an ansible group called myapp
+      add_host:
+        hostname: "ipaddress"
+        ansible_host: "nameofhost"
+        ansible_pass: "password"
+        ansible_user: user
+        groupname: nameofgroup
+    - name: Ping nameofhost
+      ping: 
+      

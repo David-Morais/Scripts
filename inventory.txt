@@ -1,0 +1,3 @@
+nameofhost 
+ansible_host=ipaddress 
+ansible_ssh_pass=rootpassword
